@@ -4,16 +4,16 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./Components/RootLayout";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Dashboard from "./pages/Dashboard";
-import ManageTeam from "./pages/ManageTeam";
-import ContactsInformation from "./pages/ContactsInformation";
-import InvoicesBalances from "./pages/InvoicesBalances";
-import ProfileForm from "./pages/ProfileForm";
+import Dashboard from "./Pages/Dashboard";
+import ManageTeam from "./Pages/ManageTeam";
+import ContactsInformation from "./Pages/ContactsInformation";
+import InvoicesBalances from "./Pages/InvoicesBalances";
+import ProfileForm from "./Pages/ProfileForm";
 import Calendar from "./Pages/calendar/Calendar";
-import FAQPage from "./pages/FAQPage";
-import BarChart from "./pages/BarChart";
-import PieChart from "./pages/PieChart";
-import LineChart from "./pages/LineChart";
+import FAQPage from "./Pages/FAQPage";
+import BarChart from "./Pages/BarChart";
+import PieChart from "./Pages/PieChart";
+import LineChart from "./Pages/LineChart";
 import "./index.css";
 
 

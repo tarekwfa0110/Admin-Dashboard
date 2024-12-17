@@ -34,7 +34,7 @@ const activities = [
     { id: 4, activity: "System backup completed", status: "Success", date: "2024-06-12" },
 ];
 
-const HomeDashboard = () => {
+const Dashboard = () => {
     const theme = useTheme();
 
     // Quick statistics
@@ -180,4 +180,4 @@ const HomeDashboard = () => {
     );
 };
 
-export default HomeDashboard;
+export default Dashboard;
