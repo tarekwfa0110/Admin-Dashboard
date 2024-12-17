@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -8,7 +8,7 @@ import {
     DialogContent,
     DialogActions,
     TextField,
-    useColorScheme, 
+    CircularProgress,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
@@ -17,12 +17,12 @@ import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 
-
 const ManageTeam = () => {
     const [pageSize, setPageSize] = useState(5);
-    const { mode } = useColorScheme("dark");
     const [selectedRows, setSelectedRows] = useState([]);
+
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(true); // Loading state
     const [newMember, setNewMember] = useState({
         firstName: '',
         lastName: '',
@@ -31,24 +31,30 @@ const ManageTeam = () => {
         phone: '',
         access: 'user'
     });
-    const [teamData, setTeamData] = useState([
-    { id: 1, firstName: "Jon", lastName: "Snow", fullName: "Jon Snow", age: 35, email: "jonsnow@gmail.com", phone: "(665)121-5454", access: "admin" },
-    { id: 2, firstName: "Cersei", lastName: "Lannister", fullName: "Cersei Lannister", age: 42, email: "cerseilannister@gmail.com", phone: "(421)314-2288", access: "admin" },
-    { id: 3, firstName: "Jaime", lastName: "Lannister", fullName: "Jaime Lannister", age: 45, email: "jaimelannister@gmail.com", phone: "(422)982-6739", access: "admin" },
-    { id: 4, firstName: "Arya", lastName: "Stark", fullName: "Arya Stark", age: 16, email: "aryastark@gmail.com", phone: "(921)425-6742", access: "manager" },
-    { id: 5, firstName: "Daenerys", lastName: "Targaryen", fullName: "Daenerys Targaryen", age: 31, email: "daenerystargaryen@gmail.com", phone: "(421)445-1189", access: "manager" },
-    { id: 6, firstName: "Ever", lastName: "Melisandre", fullName: "Ever Melisandre", age: 150, email: "evermelisandre@gmail.com", phone: "(232)545-6483", access: "user" },
-    { id: 7, firstName: "Ferrara", lastName: "Clifford", fullName: "Ferrara Clifford", age: 44, email: "ferraraclifford@gmail.com", phone: "(543)124-0123", access: "user" },
-    { id: 8, firstName: "Rossini", lastName: "Frances", fullName: "Rossini Frances", age: 36, email: "rossinifrances@gmail.com", phone: "(222)444-5555", access: "user" },
-    { id: 9, firstName: "Harvey", lastName: "Roxie", fullName: "Harvey Roxie", age: 65, email: "harveyroxie@gmail.com", phone: "(444)555-6239", access: "user" },
-    { id: 10, firstName: "Tyrion", lastName: "Lannister", fullName: "Tyrion Lannister", age: 38, email: "tyrionlannister@gmail.com", phone: "(444)555-6240", access: "manager" },
 
+    const [teamData, setTeamData] = useState([]);
 
-    ]);
+    // Simulate data fetch
+    useEffect(() => {
+        setLoading(true); // Start loading
+        setTimeout(() => {
+            setTeamData([
+                { id: 1, firstName: "Jon", lastName: "Snow", fullName: "Jon Snow", age: 35, email: "jonsnow@gmail.com", phone: "(665)121-5454", access: "admin" },
+                { id: 2, firstName: "Cersei", lastName: "Lannister", fullName: "Cersei Lannister", age: 42, email: "cerseilannister@gmail.com", phone: "(421)314-2288", access: "admin" },
+                { id: 3, firstName: "Jaime", lastName: "Lannister", fullName: "Jaime Lannister", age: 45, email: "jaimelannister@gmail.com", phone: "(422)982-6739", access: "admin" },
+                { id: 4, firstName: "Arya", lastName: "Stark", fullName: "Arya Stark", age: 16, email: "aryastark@gmail.com", phone: "(921)425-6742", access: "manager" },
+                { id: 5, firstName: "Daenerys", lastName: "Targaryen", fullName: "Daenerys Targaryen", age: 31, email: "daenerystargaryen@gmail.com", phone: "(421)445-1189", access: "manager" },
+                { id: 6, firstName: "Jon", lastName: "Snow", fullName: "Jon Snow", age: 35, email: "jonsnow@gmail.com", phone: "(665)121-5454", access: "user" },
+                { id: 7, firstName: "Cersei", lastName: "Lannister", fullName: "Cersei Lannister", age: 42, email: "cerseilannister@gmail.com", phone: "(421)314-2288", access: "user" },
+                { id: 8, firstName: "Jaime", lastName: "Lannister", fullName: "Jaime Lannister", age: 45, email: "jaimelannister@gmail.com", phone: "(422)982-6739", access: "user" },
+            ]);
+            setLoading(false); // End loading
+        }, 500); // Simulate a 1.5s data fetch
+    }, []);
 
     const handleDeleteSelected = () => {
-        setTeamData(teamData.filter(row => !selectedRows.includes(row.id)));
-        setSelectedRows([]);
+        setTeamData(prevData => prevData.filter(row => !selectedRows.includes(row.id)));
+        setSelectedRows([]); // Clear selection after deletion
     };
 
     const handleAddMember = () => {
@@ -150,7 +156,6 @@ const ManageTeam = () => {
                         variant="contained"
                         startIcon={<DeleteOutlineIcon />}
                         onClick={handleDeleteSelected}
-                        disabled={selectedRows.length === 0}
                         sx={{
                             backgroundColor: '#ff4081',
                             '&:hover': { backgroundColor: '#f50057' }
@@ -161,54 +166,32 @@ const ManageTeam = () => {
                 </Box>
             </Box>
 
-            <Box
-                height="calc(100% - 100px)"
-                sx={{
-                    "& .MuiDataGrid-root": {
-                        border: "none",
-                    },
-                    "& .MuiDataGrid-cell": {
-                        borderBottom: "none",
-                        color: mode === "light" ? "black" : "white",
-                        bgcolor: mode === "light" ? "white" : ""
-                    },
-                    "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: '#1F2A40',
-                        color: '#70d8bd',
-                        borderBottom: "none",
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        bgcolor: mode === "light" ? "white" : '#1F2A40',
-                    },
-                    "& .MuiDataGrid-footerContainer": {
-                        borderTop: "none",
-                        bgcolor: mode === "light" ? "white" : "",
-                        color: mode === "light" ? "black" : "white",
-                    },
-                    "& .MuiCheckbox-root": {
-                        color: '#70d8bd',
-                    },
-                    "& .MuiTablePagination-root": {
-                        color: mode === "light" ? "black" : "white",
-                    },
-                    "& .MuiSelect-icon": {
-                        color: '#70d8bd',
-                    },
-                }}
-            >
-                <DataGrid
-                    rows={teamData}
-                    columns={columns}
-                    pageSize={pageSize}
-                    onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    checkboxSelection
-                    onSelectionModelChange={(newSelection) => setSelectedRows(newSelection)}
-                    selectionModel={selectedRows}
-                />
-            </Box>
 
-            {/* Add Member Dialog */}
+            {loading ? (
+                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                    <CircularProgress color="primary" />
+                </Box>
+            ) : (
+                <Box
+                    height="calc(100% - 100px)"
+                >
+                    <DataGrid
+                        rows={teamData}
+                        columns={columns}
+                        pageSize={pageSize}
+                        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                        rowsPerPageOptions={[5, 10, 20]}
+                        checkboxSelection
+                        onSelectionModelChange={(newSelection) => {
+                            setSelectedRows(newSelection); // Update selectedRows
+                        }}
+                        selectionModel={selectedRows} // Ensure controlled selection
+                        loading={loading} // Pass the loading state
+                    />
+                </Box>
+            )}
+
+            
             <Dialog open={isAddDialogOpen} onClose={() => setIsAddDialogOpen(false)}>
                 <DialogTitle>Add New Team Member</DialogTitle>
                 <DialogContent>
@@ -221,40 +204,7 @@ const ManageTeam = () => {
                         value={newMember.firstName}
                         onChange={(e) => setNewMember({ ...newMember, firstName: e.target.value })}
                     />
-                    <TextField
-                        margin="dense"
-                        label="Last Name"
-                        fullWidth
-                        variant="outlined"
-                        value={newMember.lastName}
-                        onChange={(e) => setNewMember({ ...newMember, lastName: e.target.value })}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Age"
-                        type="number"
-                        fullWidth
-                        variant="outlined"
-                        value={newMember.age}
-                        onChange={(e) => setNewMember({ ...newMember, age: e.target.value })}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Email"
-                        type="email"
-                        fullWidth
-                        variant="outlined"
-                        value={newMember.email}
-                        onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Phone"
-                        fullWidth
-                        variant="outlined"
-                        value={newMember.phone}
-                        onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
-                    />
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setIsAddDialogOpen(false)} color="primary">

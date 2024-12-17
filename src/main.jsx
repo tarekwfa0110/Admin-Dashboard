@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./Components/RootLayout";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-
 import Dashboard from "./pages/Dashboard";
 import ManageTeam from "./pages/ManageTeam";
 import ContactsInformation from "./pages/ContactsInformation";
@@ -15,6 +14,7 @@ import FAQPage from "./pages/FAQPage";
 import BarChart from "./pages/BarChart";
 import PieChart from "./pages/PieChart";
 import LineChart from "./pages/LineChart";
+import "./index.css";
 
 
 const rootElement = document.getElementById("root");
