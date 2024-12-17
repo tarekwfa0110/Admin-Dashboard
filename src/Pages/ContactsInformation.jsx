@@ -3,7 +3,6 @@ import {
     Box,
     Typography,
     Button,
-    useColorScheme,
     CircularProgress,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -14,7 +13,6 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 const ContactsInformation = () => {
     const [pageSize, setPageSize] = useState(9);
-    const { mode } = useColorScheme("dark");
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
 
