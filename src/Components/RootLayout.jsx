@@ -6,6 +6,7 @@ import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
+import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -15,15 +16,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, useLocation, Outlet } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
-import { Avatar, Badge, Menu, MenuItem, useColorScheme } from "@mui/material";
+import { Badge, Menu, MenuItem } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import SettingsIcon from "@mui/icons-material/Settings";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { HelpOutline, BarChart } from "@mui/icons-material";
@@ -35,71 +34,77 @@ import { CalendarMonth } from "@mui/icons-material";
 import { PieChart } from "@mui/icons-material";
 import { Dashboard } from "@mui/icons-material";
 import TimelineIcon from "@mui/icons-material/Timeline";
+import { useAppStore } from "../store";
+import { useMediaQuery } from "@mui/material";
 
 const drawerWidth = 240;
 const menuId = "primary-search-account-menu";
 const mobileMenuId = "primary-search-account-menu-mobile";
+
+// Add responsive breakpoints
+const MOBILE_BREAKPOINT = 'sm';
+const TABLET_BREAKPOINT = 'md';
 
 const sideBarData = [
   {
     id: 1,
     name: "Dashboard",
     icon: <Dashboard />,
-    path: "/Dashboard"
+    path: "/dashboard"
   },
   {
     id: 2,
     name: "Manage Team",
     icon: <PeopleAlt />,
-    path: "/Manage-Team"
+    path: "/manage-team"
   },
   {
     id: 3,
     name: "Contacts Information",
     icon: <ContactsOutlined />,
-    path: "/Contacts-Information"
+    path: "/contacts-information"
   },
   {
     id: 4,
     name: "Invoices Balances",
     icon: <ReceiptLongOutlined />,
-    path: "/Invoices-Balances"
+    path: "/invoices-balances"
   },
   {
     id: 5,
     name: "Profile Form",
     icon: <PersonOutlined />,
-    path: "/Profile-Form"
+    path: "/profile-form"
   },
   {
     id: 6,
     name: "Calendar",
     icon: <CalendarMonth />,
-    path: "/Calendar"
+    path: "/calendar"
   },
   {
     id: 7,
     name: "FAQ Page",
     icon: <HelpOutline />,
-    path: "/FAQ-Page"
+    path: "/faq-page"
   },
   {
     id: 8,
     name: "Bar Chart",
     icon: <BarChart />,
-    path: "/Bar-Chart"
+    path: "/bar-chart"
   },
   {
     id: 9,
     name: "Pie Chart",
     icon: <PieChart />,
-    path: "/Pie-Chart"
+    path: "/pie-chart"
   },
   {
     id: 10,
     name: "Line Chart",
     icon: <TimelineIcon />,
-    path: "/Line-Chart"
+    path: "/line-chart"
   },
 ];
 
@@ -206,26 +211,66 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-
 export default function RootLayout() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const { mode, setMode } = useColorScheme("dark");
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
+  
+  const mode = useAppStore((state) => state.theme);
+  const toggleTheme = useAppStore((state) => state.toggleTheme);
 
-  if (!mode) {
-    return null;
-  }
+  // Add responsive drawer handling
+  const isMobile = useMediaQuery(theme.breakpoints.down(MOBILE_BREAKPOINT));
+  const isTablet = useMediaQuery(theme.breakpoints.down(TABLET_BREAKPOINT));
+
+  // Auto close drawer on mobile when route changes
+  React.useEffect(() => {
+    if (isMobile && open) {
+      setOpen(false);
+    }
+  }, [pathname, isMobile]);
+
+  // Auto close drawer on mobile/tablet when clicking outside
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (isTablet && open) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isTablet, open]);
+
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setMobileMoreAnchorEl(null)
+  const handleDrawerOpen = () => {
+    setOpen(true);
   };
 
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+
+  const handleMobileMenuOpen = (event) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
 
   const renderMenu = (
     <Menu
@@ -262,12 +307,16 @@ export default function RootLayout() {
         horizontal: "right",
       }}
       open={isMobileMenuOpen}
-      onClose={() => setMobileMoreAnchorEl(null)}
+      onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+        <IconButton
+          size="large"
+          aria-label="show 4 new mails"
+          color="inherit"
+        >
           <Badge badgeContent={4} color="error">
-            <MailIcon />
+            <NotificationsIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
@@ -284,7 +333,7 @@ export default function RootLayout() {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem onClick={(event) => setAnchorEl(event.currentTarget)}>
+      <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -302,21 +351,30 @@ export default function RootLayout() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar 
+        position="fixed" 
+        open={open}
+        sx={{
+          zIndex: theme.zIndex.drawer + 1,
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            onClick={() => setOpen(true)}
+            onClick={handleDrawerOpen}
             edge="start"
             sx={{
-              marginRight: 5,
+              marginRight: { xs: 1, sm: 2, md: 5 },
               ...(open && { display: "none" }),
             }}
           >
             <MenuIcon />
           </IconButton>
-
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -324,29 +382,33 @@ export default function RootLayout() {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
+              sx={{
+                width: { xs: '100%', sm: 'auto' },
+                '& .MuiInputBase-input': {
+                  width: { xs: '100%', sm: '12ch', md: '20ch' },
+                  '&:focus': {
+                    width: { xs: '100%', sm: '20ch', md: '30ch' },
+                  },
+                },
+              }}
             />
           </Search>
-
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-
-            {mode === "dark" ? (
-              <IconButton color="inherit" onClick={() => setMode("light")}><DarkModeIcon/></IconButton>
-            ) : (
-              <IconButton color="inherit" onClick={() => setMode("dark")}><LightModeIcon/></IconButton>
-            )}
-
-
-            <IconButton>
-              <SettingsIcon className="text-white" />
-            </IconButton>
-
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
             <IconButton
               size="large"
-              aria-label="show 17 new notifications"
+              aria-label="toggle theme"
+              color="inherit"
+              onClick={toggleTheme}
+            >
+              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+            <IconButton
+              size="large"
+              aria-label="show notifications"
               color="inherit"
             >
-              <Badge badgeContent={17} color="error">
+              <Badge badgeContent={4} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -356,7 +418,7 @@ export default function RootLayout() {
               aria-label="account of current user"
               aria-controls={menuId}
               aria-haspopup="true"
-              onClick={(event) => setAnchorEl(event.currentTarget)}
+              onClick={handleProfileMenuOpen}
               color="inherit"
             >
               <AccountCircle />
@@ -368,7 +430,7 @@ export default function RootLayout() {
               aria-label="show more"
               aria-controls={mobileMenuId}
               aria-haspopup="true"
-              onClick={(event) => setMobileMoreAnchorEl(event.currentTarget)}
+              onClick={handleMobileMenuOpen}
               color="inherit"
             >
               <MoreIcon />
@@ -378,67 +440,89 @@ export default function RootLayout() {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
-      <Drawer variant="permanent" open={open}>
-
+      <Drawer
+        variant={isMobile ? "temporary" : "permanent"}
+        open={isMobile ? open : true}
+        onClose={() => setOpen(false)}
+        ModalProps={{
+          keepMounted: true, // Better mobile performance
+        }}
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            ...(!isMobile && {
+              ...(!open && {
+                width: theme.spacing(7),
+                overflowX: 'hidden',
+                transition: theme.transitions.create('width', {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen,
+                }),
+              }),
+            }),
+          },
+        }}
+      >
         <DrawerHeader>
-          <IconButton onClick={() => setOpen(false)}>
+          <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
               <ChevronLeftIcon />
             )}
           </IconButton>
-
         </DrawerHeader>
-        {open && <div className=" mx-auto mb-10 flex flex-col items-center gap-4">
-
-          <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp" />
-          <p>Tarek Wfa</p>
-          <p className="text-gray-600">admin</p>
-        </div>
-        }
-
-
         <Divider />
-
-
         <List>
           {sideBarData.map((item) => (
-            <ListItem key={item.id} disablePadding sx={{ display: "block" }}
-              className=
-              {
-                `${pathname === item.path && mode === "dark" && "bg-gray-600"} 
-                ${pathname === item.path && mode === "light" && "bg-gray-300"}`
-              }>
-              <Link to={item.path}>
-                <ListItemButton
+            <ListItem key={item.id} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                component={Link}
+                to={item.path}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                  bgcolor: pathname === item.path ? "rgba(0,0,0,0.08)" : "transparent",
+                }}
+              >
+                <ListItemIcon
                   sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
                   }}
-
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    sx={{ opacity: open ? 1 : 0 }}
-                  />
-                </ListItemButton></Link>
-
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.name}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    display: { xs: 'block', sm: open ? 'block' : 'none' }
+                  }}
+                />
+              </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          p: { xs: 1, sm: 2, md: 3 },
+          width: { xs: '100%', sm: `calc(100% - ${theme.spacing(7)})`, md: open ? `calc(100% - ${drawerWidth}px)` : `calc(100% - ${theme.spacing(7)})` },
+          marginLeft: { xs: 0, sm: `${theme.spacing(7)}`, md: open ? `${drawerWidth}px` : `${theme.spacing(7)}` },
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
         <DrawerHeader />
         <Outlet />
       </Box>
