@@ -8,18 +8,18 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { useAppStore } from "./store";
 
 // Import all components
-import RootLayout from "./components/RootLayout";
-import Dashboard from "./pages/Dashboard";
-import ManageTeam from "./pages/ManageTeam";
-import ContactsInformation from "./pages/ContactsInformation";
-import InvoicesBalances from "./pages/InvoicesBalances";
-import ProfileForm from "./pages/ProfileForm";
-import Calendar from "./pages/calendar/Calendar";
-import FAQPage from "./pages/FAQPage";
-import BarChart from "./pages/BarChart";
-import PieChart from "./pages/PieChart";
-import LineChart from "./pages/LineChart";
-import ErrorBoundary from "./components/ErrorBoundary";
+import RootLayout from "./components/RootLayout.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import ManageTeam from "./pages/ManageTeam.jsx";
+import ContactsInformation from "./pages/ContactsInformation.jsx";
+import InvoicesBalances from "./pages/InvoicesBalances.jsx";
+import ProfileForm from "./pages/ProfileForm.jsx";
+import Calendar from "./pages/calendar/Calendar.jsx";
+import FAQPage from "./pages/FAQPage.jsx";
+import BarChart from "./pages/BarChart.jsx";
+import PieChart from "./pages/PieChart.jsx";
+import LineChart from "./pages/LineChart.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.tsx";
 
 import "./index.css";
 
